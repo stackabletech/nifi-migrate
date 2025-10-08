@@ -30,7 +30,11 @@ deny:
 
 # Run pre-commit hooks on all files
 pre-commit:
-    pre-commit run --all-files
+    pre-commit run \
+      --all-files \
+      --verbose \
+      --show-diff-on-failure \
+      --color always
 
 # Install pre-commit hooks
 pre-commit-install:
