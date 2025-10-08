@@ -1,0 +1,59 @@
+# SPDX-FileCopyrightText: 2025 Stackable GmbH
+# SPDX-License-Identifier: Apache-2.0
+---
+fail_fast: false
+exclude: \.patch$
+
+default_language_version:
+  node: system
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c # 6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: detect-aws-credentials
+        args: ["--allow-missing-credentials"]
+      - id: detect-private-key
+
+  - repo: https://github.com/adrienverge/yamllint
+    rev: 79a6b2b1392eaf49cdd32ac4f14be1a809bbd8f7 # 1.37.1
+    hooks:
+      - id: yamllint
+
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: 192ad822316c3a22fb3d3cc8aa6eafa0b8488360 # 0.45.0
+    hooks:
+      - id: markdownlint
+
+  - repo: https://github.com/rhysd/actionlint
+    rev: 03d0035246f3e81f36aed592ffb4bebf33a03106 # 1.7.7
+    hooks:
+      - id: actionlint
+
+  - repo: local
+    hooks:
+      - id: cargo-test
+        name: cargo-test
+        language: system
+        entry: cargo test
+        stages: [pre-commit, pre-merge-commit]
+        pass_filenames: false
+        files: \.rs$|Cargo\.(toml|lock)
+
+      - id: cargo-rustfmt
+        name: cargo-rustfmt
+        language: system
+        entry: cargo fmt --all -- --check
+        stages: [pre-commit, pre-merge-commit]
+        pass_filenames: false
+        files: \.rs$
+
+      - id: cargo-clippy
+        name: cargo-clippy
+        language: system
+        entry: cargo clippy --all-targets -- -D warnings
+        stages: [pre-commit, pre-merge-commit]
+        pass_filenames: false
+        files: \.rs$

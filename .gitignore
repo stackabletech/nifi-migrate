@@ -1,0 +1,6 @@
+# Rust build artifacts
+/target
+Cargo.lock
+
+# Claude Code local settings
+.claude/

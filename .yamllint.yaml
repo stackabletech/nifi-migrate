@@ -1,0 +1,19 @@
+---
+# SPDX-FileCopyrightText: 2025 Stackable GmbH
+# SPDX-License-Identifier: Apache-2.0
+
+extends: default
+
+ignore: |
+  deploy/helm/**/templates
+
+rules:
+  line-length: disable
+  truthy:
+    check-keys: false
+  comments:
+    min-spaces-from-content: 1  # Needed due to https://github.com/adrienverge/yamllint/issues/443
+  indentation: disable
+  braces:
+    max-spaces-inside: 1
+    max-spaces-inside-empty: 0
