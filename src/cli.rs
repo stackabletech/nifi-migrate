@@ -9,15 +9,15 @@ use std::path::PathBuf;
 #[command(version)]
 #[command(about = "Migrate NiFi 1.x flow.json files to NiFi 2.x format", long_about = None)]
 pub struct Args {
-    /// Input flow.json file
+    /// Input flow.json file.
     #[arg(short, long)]
     pub input: PathBuf,
 
-    /// Output flow.json file
+    /// Output flow.json file.
     #[arg(short, long)]
     pub output: PathBuf,
 
-    /// Pretty-print the output JSON (default: compact)
+    /// Pretty-print the output JSON (default: compact).
     #[arg(short, long)]
     pub pretty: bool,
 

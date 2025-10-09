@@ -34,6 +34,7 @@ To install pre-commit git hooks:
 - Files covered by `REUSE.toml` don't need individual headers
 - License: Apache-2.0
 - Copyright holder: Stackable GmbH
+- **All full sentences in comments (`//` and `///`) must end with a period**
 
 ## Adding New Migration Rules
 
