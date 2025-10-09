@@ -22,9 +22,8 @@ pub struct Migrator {
     rules: Vec<Box<dyn MigrationRule>>,
 }
 
-impl Migrator {
-    /// Create a new migrator with default rules.
-    pub fn new() -> Self {
+impl Default for Migrator {
+    fn default() -> Self {
         Self {
             rules: vec![
                 Box::new(JoltTransformMigration),
@@ -32,7 +31,9 @@ impl Migrator {
             ],
         }
     }
+}
 
+impl Migrator {
     /// Migrate a flow JSON file.
     pub fn migrate_file(
         &self,
@@ -66,19 +67,17 @@ impl Migrator {
             }
         }
 
-        // It's not perfect reading it all in memory, but I decided it's fine for now.
-        // I tried it on a reasonably large file and it was fine.
-        // We can switch to streaming if it's ever needed.
-        let content = fs::read_to_string(input_path)
-            .with_context(|| format!("Failed to read input file: {}", input_path.display()))?;
+        let file = fs::File::open(input_path)
+            .with_context(|| format!("Failed to open input file: {}", input_path.display()))?;
+        let reader = std::io::BufReader::new(file);
 
-        let mut flow: Value = serde_json::from_str(&content)
+        let mut flow: Value = serde_json::from_reader(reader)
             .with_context(|| format!("Failed to parse JSON from: {}", input_path.display()))?;
 
         let changes = if format_only {
             Vec::new()
         } else {
-            self.migrate_flow(&mut flow)?
+            self.migrate_flow(&mut flow)
         };
 
         // In format-only mode, always write output even if no migrations
@@ -100,15 +99,10 @@ impl Migrator {
     }
 
     /// Migrate a flow JSON value in-place.
-    fn migrate_flow(&self, flow: &mut Value) -> Result<Vec<MigrationChange>> {
+    fn migrate_flow(&self, flow: &mut Value) -> Vec<MigrationChange> {
         let mut changes = Vec::new();
-        self.process_value(flow, &mut changes);
-        Ok(changes)
-    }
-
-    /// Recursively process a JSON value looking for processors.
-    fn process_value(&self, value: &mut Value, changes: &mut Vec<MigrationChange>) {
-        self.process_value_with_context(value, None, changes);
+        self.process_value_with_context(flow, None, &mut changes);
+        changes
     }
 
     /// Recursively process a JSON value with parent key context.
@@ -176,12 +170,6 @@ impl Migrator {
                 });
             }
         }
-    }
-}
-
-impl Default for Migrator {
-    fn default() -> Self {
-        Self::new()
     }
 }
 
@@ -254,8 +242,8 @@ mod tests {
             ]
         });
 
-        let migrator = Migrator::new();
-        let changes = migrator.migrate_flow(&mut flow).unwrap();
+        let migrator = Migrator::default();
+        let changes = migrator.migrate_flow(&mut flow);
 
         assert_eq!(changes.len(), 2);
         assert!(changes.iter().any(|c| c.processor_id == "proc-1"));
@@ -285,8 +273,8 @@ mod tests {
             ]
         });
 
-        let migrator = Migrator::new();
-        let changes = migrator.migrate_flow(&mut flow).unwrap();
+        let migrator = Migrator::default();
+        let changes = migrator.migrate_flow(&mut flow);
 
         assert_eq!(changes.len(), 1);
         assert_eq!(changes[0].processor_id, "jolt-proc");

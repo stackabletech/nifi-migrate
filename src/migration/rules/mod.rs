@@ -14,7 +14,7 @@ pub trait MigrationRule {
     /// Check if this rule applies to the given processor.
     fn applies(&self, processor: &Value) -> bool;
 
-    /// Apply the migration to the processor, returning true if changes were made.
+    /// Apply the migration to the processor, returning `true` if changes were made.
     fn apply(&self, processor: &mut Value) -> bool;
 
     /// Get a description of what this rule does.

@@ -2,16 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 
 mod cli;
+mod migration;
 
 use anyhow::Result;
 use clap::Parser;
-use cli::Args;
-use nifi_migrate::{MigrationChange, Migrator};
+use cli::Cli;
+use migration::{MigrationChange, Migrator};
 
 fn main() -> Result<()> {
-    let args = Args::parse();
+    let args = Cli::parse();
 
-    let migrator = Migrator::new();
+    let migrator = Migrator::default();
     // Should we get more arguments we can pass along a struct...this kinda grew organically :)
     let changes =
         migrator.migrate_file(&args.input, &args.output, args.pretty, args.format_only)?;

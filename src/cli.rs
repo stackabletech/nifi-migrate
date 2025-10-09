@@ -8,7 +8,7 @@ use std::path::PathBuf;
 #[command(name = "nifi-migrate")]
 #[command(version)]
 #[command(about = "Migrate NiFi 1.x flow.json files to NiFi 2.x format", long_about = None)]
-pub struct Args {
+pub struct Cli {
     /// Input flow.json file.
     #[arg(short, long)]
     pub input: PathBuf,
