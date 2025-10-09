@@ -39,6 +39,7 @@ impl Migrator {
         input_path: &Path,
         output_path: &Path,
         pretty: bool,
+        format_only: bool,
     ) -> Result<Vec<MigrationChange>> {
         // Validate input exists
         if !input_path.exists() {
@@ -74,9 +75,15 @@ impl Migrator {
         let mut flow: Value = serde_json::from_str(&content)
             .with_context(|| format!("Failed to parse JSON from: {}", input_path.display()))?;
 
-        let changes = self.migrate_flow(&mut flow)?;
+        let changes = if format_only {
+            Vec::new()
+        } else {
+            self.migrate_flow(&mut flow)?
+        };
 
-        if !changes.is_empty() {
+        // In format-only mode, always write output even if no migrations
+        // In normal mode, only write if changes were made
+        if format_only || !changes.is_empty() {
             let output = if pretty {
                 serde_json::to_string_pretty(&flow)
             } else {

@@ -12,9 +12,14 @@ fn main() -> Result<()> {
     let args = Args::parse();
 
     let migrator = Migrator::new();
-    let changes = migrator.migrate_file(&args.input, &args.output, args.pretty)?;
+    // Should we get more arguments we can pass along a struct...this kinda grew organically :)
+    let changes =
+        migrator.migrate_file(&args.input, &args.output, args.pretty, args.format_only)?;
 
-    if changes.is_empty() {
+    if args.format_only {
+        println!("Format-only mode: File reformatted without migrations.");
+        println!("Output written to: {}", args.output.display());
+    } else if changes.is_empty() {
         println!("No migrations needed.");
     } else {
         println!("Migration complete. Changes made:");
