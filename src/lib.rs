@@ -161,13 +161,13 @@ impl Migrator {
                     .or_else(|| processor.get("id"))
                     .and_then(|v| v.as_str())
                     .unwrap_or("unknown")
-                    .to_string();
+                    .to_owned();
 
                 let processor_name = processor
                     .get("name")
                     .and_then(|v| v.as_str())
                     .unwrap_or("unnamed")
-                    .to_string();
+                    .to_owned();
 
                 changes.push(MigrationChange {
                     processor_id,
