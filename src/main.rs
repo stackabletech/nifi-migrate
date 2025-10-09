@@ -6,7 +6,7 @@ mod cli;
 use anyhow::Result;
 use clap::Parser;
 use cli::Args;
-use nifi_migrate::Migrator;
+use nifi_migrate::{MigrationChange, Migrator};
 
 fn main() -> Result<()> {
     let args = Args::parse();
@@ -24,11 +24,14 @@ fn main() -> Result<()> {
     } else {
         println!("Migration complete. Changes made:");
 
-        for change in &changes {
-            println!(
-                "  - {} ({}): {}",
-                change.processor_name, change.processor_id, change.rule_description
-            );
+        for MigrationChange {
+            processor_name,
+            processor_id,
+            rule_description,
+            ..
+        } in &changes
+        {
+            println!("  - {processor_name} ({processor_id}): {rule_description}");
         }
 
         println!("\nOutput written to: {}", args.output.display());

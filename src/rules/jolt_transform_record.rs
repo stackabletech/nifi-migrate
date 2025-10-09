@@ -30,9 +30,8 @@ impl MigrationRule for JoltTransformRecordMigration {
             if type_field.as_str()
                 == Some("org.apache.nifi.processors.jolt.record.JoltTransformRecord")
             {
-                *type_field = Value::String(
-                    "org.apache.nifi.processors.jolt.JoltTransformRecord".to_string(),
-                );
+                *type_field =
+                    Value::String("org.apache.nifi.processors.jolt.JoltTransformRecord".to_owned());
                 changed = true;
             }
         }
@@ -41,7 +40,7 @@ impl MigrationRule for JoltTransformRecordMigration {
         if let Some(bundle) = processor.get_mut("bundle") {
             if let Some(artifact) = bundle.get_mut("artifact") {
                 if artifact.as_str() == Some("nifi-jolt-record-nar") {
-                    *artifact = Value::String("nifi-jolt-nar".to_string());
+                    *artifact = Value::String("nifi-jolt-nar".to_owned());
                     changed = true;
                 }
             }
@@ -51,7 +50,7 @@ impl MigrationRule for JoltTransformRecordMigration {
     }
 
     fn description(&self) -> String {
-        "Migrate JoltTransformRecord from jolt-record to jolt bundle".to_string()
+        "Migrate JoltTransformRecord from jolt-record to jolt bundle".to_owned()
     }
 }
 
