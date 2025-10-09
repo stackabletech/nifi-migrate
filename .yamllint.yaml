@@ -4,8 +4,6 @@
 
 extends: default
 
-ignore: |
-  deploy/helm/**/templates
 
 rules:
   line-length: disable
