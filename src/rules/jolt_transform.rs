@@ -4,7 +4,7 @@
 use super::MigrationRule;
 use serde_json::Value;
 
-/// Migration rule for JoltTransformJSON processor
+/// Migration rule for JoltTransformJSON processor.
 ///
 /// Migrates `org.apache.nifi.processors.standard.JoltTransformJSON` to
 /// `org.apache.nifi.processors.jolt.JoltTransformJSON` and updates the

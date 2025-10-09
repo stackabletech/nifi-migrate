@@ -9,7 +9,7 @@ use serde_json::Value;
 use std::fs;
 use std::path::Path;
 
-/// Represents a change that would be made during migration
+/// Represents a change that would be made during migration.
 #[derive(Debug, Clone)]
 pub struct MigrationChange {
     pub processor_id: String,
@@ -17,13 +17,13 @@ pub struct MigrationChange {
     pub rule_description: String,
 }
 
-/// Main migration engine
+/// Main migration engine.
 pub struct Migrator {
     rules: Vec<Box<dyn MigrationRule>>,
 }
 
 impl Migrator {
-    /// Create a new migrator with default rules
+    /// Create a new migrator with default rules.
     pub fn new() -> Self {
         Self {
             rules: vec![
@@ -33,7 +33,7 @@ impl Migrator {
         }
     }
 
-    /// Migrate a flow JSON file
+    /// Migrate a flow JSON file.
     pub fn migrate_file(
         &self,
         input_path: &Path,
@@ -99,14 +99,14 @@ impl Migrator {
         Ok(changes)
     }
 
-    /// Migrate a flow JSON value in-place
+    /// Migrate a flow JSON value in-place.
     fn migrate_flow(&self, flow: &mut Value) -> Result<Vec<MigrationChange>> {
         let mut changes = Vec::new();
         self.process_value(flow, &mut changes);
         Ok(changes)
     }
 
-    /// Recursively process a JSON value looking for processors
+    /// Recursively process a JSON value looking for processors.
     fn process_value(&self, value: &mut Value, changes: &mut Vec<MigrationChange>) {
         self.process_value_with_context(value, None, changes);
     }
@@ -152,7 +152,7 @@ impl Migrator {
         }
     }
 
-    /// Process a single processor object
+    /// Process a single processor object.
     fn process_processor(&self, processor: &mut Value, changes: &mut Vec<MigrationChange>) {
         for rule in &self.rules {
             if rule.applies(processor) && rule.apply(processor) {
