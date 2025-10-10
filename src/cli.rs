@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2025 Stackable GmbH
 // SPDX-License-Identifier: Apache-2.0
 
-use clap::Parser;
+use clap::{Parser, ValueHint};
 use std::path::PathBuf;
 
 #[derive(Parser)]
@@ -10,11 +10,11 @@ use std::path::PathBuf;
 #[command(about = "Migrate NiFi 1.x flow.json files to NiFi 2.x format", long_about = None)]
 pub struct Cli {
     /// Input flow.json file.
-    #[arg(short, long)]
+    #[arg(value_hint = ValueHint::FilePath)]
     pub input: PathBuf,
 
     /// Output flow.json file.
-    #[arg(short, long)]
+    #[arg(value_hint = ValueHint::FilePath)]
     pub output: PathBuf,
 
     /// Pretty-print the output JSON (default: compact).

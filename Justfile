@@ -46,4 +46,4 @@ build:
 
 # Run the tool
 run input output="flow-migrated.json" *args="":
-    cargo run -- --input "{{input}}" --output "{{output}}" {{args}}
+    cargo run -- "{{input}}" "{{output}}" {{args}}

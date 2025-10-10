@@ -7,13 +7,6 @@ SPDX-License-Identifier: Apache-2.0
 
 A Rust CLI tool for migrating Apache NiFi flow.json files between versions.
 
-## Features
-
-- **Non-destructive**: Reads from input file and writes to a separate output file
-- **Recursive**: Processes nested process groups automatically
-- **Extensible**: Easy to add new migration rules via the trait-based system
-- **Safe**: Distinguishes between processors and controller services to avoid incorrect migrations
-
 ## Supported Migrations
 
 ### JoltTransformJSON Processor
@@ -30,7 +23,7 @@ A Rust CLI tool for migrating Apache NiFi flow.json files between versions.
 - **Reason**: Consolidated into the main jolt bundle
 - **Reference**: [NIFI-12554](https://issues.apache.org/jira/browse/NIFI-12554)
 
-## Installation
+## Build
 
 ```bash
 cargo build --release
@@ -43,28 +36,24 @@ The binary will be available at `target/release/nifi-migrate`
 Basic usage:
 
 ```bash
-nifi-migrate --input flow.json --output flow-migrated.json
+nifi-migrate flow.json flow-migrated.json
 ```
 
 Or using the cargo alias:
 
 ```bash
-cargo nifi-migrate --input flow.json --output flow-migrated.json
+cargo nifi-migrate flow.json flow-migrated.json
 ```
 
 With pretty-printed JSON output:
 
 ```bash
-nifi-migrate --input flow.json --output flow-migrated.json --pretty
+nifi-migrate flow.json flow-migrated.json --pretty
 ```
 
 ### Options
 
-- `-i, --input <PATH>`: Input flow.json file (required)
-- `-o, --output <PATH>`: Output flow.json file (required)
-- `-p, --pretty`: Pretty-print the output JSON (optional, default is compact)
-- `-h, --help`: Show help information
-- `-V, --version`: Show version information
+Call `nifi-migrate --help` to see all its options.
 
 ## Important Notes
 
