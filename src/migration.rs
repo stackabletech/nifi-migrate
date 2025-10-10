@@ -4,7 +4,7 @@
 mod rules;
 
 use anyhow::{Context, Result};
-use rules::{JoltTransformMigration, JoltTransformRecordMigration, MigrationRule};
+use rules::{JoltTransformJsonMigration, JoltTransformRecordMigration, MigrationRule};
 use serde_json::Value;
 use std::fs;
 use std::path::Path;
@@ -26,7 +26,7 @@ impl Default for Migrator {
     fn default() -> Self {
         Self {
             rules: vec![
-                Box::new(JoltTransformMigration),
+                Box::new(JoltTransformJsonMigration),
                 Box::new(JoltTransformRecordMigration),
             ],
         }
@@ -192,7 +192,7 @@ mod tests {
             }
         });
 
-        let rule = JoltTransformMigration;
+        let rule = JoltTransformJsonMigration;
         assert!(rule.applies(&processor));
         assert!(rule.apply(&mut processor));
 
