@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 license = "Apache-2.0"
 authors = ["Stackable GmbH <info@stackable.tech>"]
-description = "CLI tool for migrating Apache NiFi flow.json files between versions"
+description = "A CLI tool for migrating Apache NiFi flow.json files between versions"
 repository = "https://github.com/stackabletech/nifi-migrate"
 
 [dependencies]
