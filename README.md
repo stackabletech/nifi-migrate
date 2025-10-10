@@ -67,47 +67,15 @@ The order of JSON keys may also change as the file is parsed and reserialized. W
 
 To add a new migration rule:
 
-1. Create a new file in `src/rules/` (e.g., `my_rule.rs`)
-1. Implement the `MigrationRule` trait:
-
-```rust
-use super::MigrationRule;
-use serde_json::Value;
-
-pub struct MyMigrationRule;
-
-impl MigrationRule for MyMigrationRule {
-    fn applies(&self, processor: &Value) -> bool {
-        // Check if this rule applies
-        processor.get("type")
-            .and_then(|t| t.as_str())
-            .map(|t| t == "org.apache.nifi.processors.old.Processor")
-            .unwrap_or(false)
-    }
-
-    fn apply(&self, processor: &mut Value) -> bool {
-        // Apply the migration
-        if let Some(type_field) = processor.get_mut("type") {
-            *type_field = Value::String("org.apache.nifi.processors.new.Processor".to_string());
-            return true;
-        }
-        false
-    }
-
-    fn description(&self) -> String {
-        "Migrate Processor from old to new package".to_string()
-    }
-}
-```
-
-1. Add your rule to `src/rules/mod.rs`:
+1. look at one of the existing ones in `src/rules` and follow the pattern (basically: Implement the `MigrationRule` trait).
+1. Add your rule to `src/rules/rules.rs`:
 
 ```rust
 mod my_rule;
 pub use my_rule::MyMigrationRule;
 ```
 
-1. Register it in `Migrator::new()` in `src/lib.rs`:
+1. Register it in `Migrator::new()` in `src/migration.rs`:
 
 ```rust
 pub fn new() -> Self {
@@ -119,8 +87,6 @@ pub fn new() -> Self {
     }
 }
 ```
-
-1. Add tests to verify your rule works correctly
 
 ## License
 
@@ -144,7 +110,7 @@ You can run all checks at once using:
 just all
 ```
 
-Or run pre-commit hooks:
+And run pre-commit hooks:
 
 ```bash
 just pre-commit
