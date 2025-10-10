@@ -13,14 +13,14 @@ A Rust CLI tool for migrating Apache NiFi flow.json files between versions.
 
 - **Type**: `org.apache.nifi.processors.standard.JoltTransformJSON` → `org.apache.nifi.processors.jolt.JoltTransformJSON`
 - **Bundle artifact**: `nifi-standard-nar` → `nifi-jolt-nar`
-- **Reason**: In NiFi 2.x, Jolt processors were moved to a separate bundle
+- **Reason**: In NiFi 2.x, Jolt processors were moved to a separate bundle and properties were renamed
 - **Reference**: [NIFI-12554](https://issues.apache.org/jira/browse/NIFI-12554)
 
 ### JoltTransformRecord Processor
 
 - **Type**: `org.apache.nifi.processors.jolt.record.JoltTransformRecord` → `org.apache.nifi.processors.jolt.JoltTransformRecord`
 - **Bundle artifact**: `nifi-jolt-record-nar` → `nifi-jolt-nar`
-- **Reason**: Consolidated into the main jolt bundle
+- **Reason**: In NiFi 2.x, Jolt processors were moved to a separate bundle and properties were renamed
 - **Reference**: [NIFI-12554](https://issues.apache.org/jira/browse/NIFI-12554)
 
 ## Build
