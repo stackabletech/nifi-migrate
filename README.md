@@ -59,34 +59,37 @@ Call `nifi-migrate --help` to see all its options.
 
 ### JSON Formatting
 
-⚠️ **The tool will reformat your JSON file.** By default, output is compact (single line). Use `--pretty` flag for human-readable formatting with indentation.
+> [!WARNING]
+> The output file will be reformatted. By default, output is compact (single line). Use `--pretty` flag for human-readable formatting with indentation.
 
-The order of JSON keys may also change as the file is parsed and reserialized. While this doesn't affect NiFi's ability to read the file, it may make git diffs larger.
+The order of JSON keys in the output may also change as the file is parsed and reserialized. While this doesn't affect NiFi's ability to read the file, it may make git diffs larger.
+
+The input file is never modified.
 
 ## Adding New Migration Rules
 
 To add a new migration rule:
 
 1. look at one of the existing ones in `src/rules` and follow the pattern (basically: Implement the `MigrationRule` trait).
-1. Add your rule to `src/rules/rules.rs`:
+2. Add your rule to `src/rules/rules.rs`:
 
-```rust
-mod my_rule;
-pub use my_rule::MyMigrationRule;
-```
+    ```rust
+    mod my_rule;
+    pub use my_rule::MyMigrationRule;
+    ```
 
-1. Register it in `Migrator::new()` in `src/migration.rs`:
+3. Register it in `Migrator::new()` in `src/migration.rs`:
 
-```rust
-pub fn new() -> Self {
-    Self {
-        rules: vec![
-            Box::new(JoltTransformMigration),
-            Box::new(MyMigrationRule),  // Add your rule here
-        ],
+    ```rust
+    pub fn new() -> Self {
+        Self {
+            rules: vec![
+                Box::new(JoltTransformMigration),
+                Box::new(MyMigrationRule),  // Add your rule here
+            ],
+        }
     }
-}
-```
+    ```
 
 ## License
 
