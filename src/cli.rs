@@ -5,9 +5,7 @@ use clap::{Parser, ValueHint};
 use std::path::PathBuf;
 
 #[derive(Parser)]
-#[command(name = "nifi-migrate")]
-#[command(version)]
-#[command(about = "Migrate NiFi 1.x flow.json files to NiFi 2.x format", long_about = None)]
+#[command(author, version, about)]
 pub struct Cli {
     /// Input flow.json file.
     #[arg(value_hint = ValueHint::FilePath)]
