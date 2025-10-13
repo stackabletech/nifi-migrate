@@ -101,6 +101,74 @@ To add a new migration rule:
     }
     ```
 
+## Releases
+
+### How to Create a Release
+
+1. **Update version numbers** in `Cargo.toml`:
+
+   ```toml
+   [package]
+   version = "0.2.0"  # Update to new version
+   ```
+
+2. **Update CHANGELOG.md**:
+   - Move items from `[Unreleased]` section to a new version section
+   - Add the release date
+   - Update the comparison links at the bottom
+   - Example:
+
+     ```markdown
+     ## [0.2.0] - 2025-10-14
+
+     ### Added
+     - New migration rule for XYZ
+
+     [Unreleased]: https://github.com/stackabletech/nifi-migrate/compare/rel/nifi-migrate-0.2.0...HEAD
+     [0.2.0]: https://github.com/stackabletech/nifi-migrate/releases/tag/rel/nifi-migrate-0.2.0
+     ```
+
+3. **Create a pull request** with these changes:
+   - Title: `Prepare release 0.2.0`
+   - Ensure all CI checks pass
+   - Get approval and merge to `main`
+
+4. **Create and push the release tag**:
+
+   ```bash
+   git checkout main
+   git pull origin main
+   git tag rel/nifi-migrate-0.2.0
+   git push origin rel/nifi-migrate-0.2.0
+   ```
+
+5. **Automated release process**:
+   - GitHub Actions will automatically:
+     - Create a draft release
+     - Build binaries for 4 platforms:
+       - `nifi-migrate-aarch64-unknown-linux-gnu` (Linux ARM64)
+       - `nifi-migrate-x86_64-unknown-linux-gnu` (Linux x86_64)
+       - `nifi-migrate-aarch64-apple-darwin` (macOS ARM64)
+       - `nifi-migrate-x86_64-pc-windows-msvc.exe` (Windows x86_64)
+     - Upload all binaries to the release
+     - Automatically publish the release (no manual step needed)
+
+6. **Verify the release**:
+   - Check <https://github.com/stackabletech/nifi-migrate/releases>
+   - Download and test binaries on different platforms
+   - Update documentation if needed
+
+### Release Checklist
+
+- [ ] Version bumped in `Cargo.toml`
+- [ ] `CHANGELOG.md` updated with new version and release date
+- [ ] All migration rules documented in README's "Supported Migrations" section
+- [ ] All tests passing locally (`just all`)
+- [ ] PR created, reviewed, and merged
+- [ ] Tag created with format `rel/nifi-migrate-X.Y.Z`
+- [ ] Tag pushed to origin
+- [ ] GitHub release automatically published with all 4 binaries
+
 ## License
 
 Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.
