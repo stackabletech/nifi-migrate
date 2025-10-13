@@ -48,6 +48,7 @@ jobs:
           - { target: aarch64-unknown-linux-gnu, os: ubuntu-24.04-arm }
           - { target: x86_64-unknown-linux-gnu, os: ubuntu-latest }
           - { target: aarch64-apple-darwin, os: macos-latest }
+          - { target: x86_64-pc-windows-msvc, os: windows-latest }
     runs-on: ${{ matrix.targets.os }}
     steps:
       - name: Checkout
@@ -61,6 +62,4 @@ jobs:
           targets: ${{ matrix.targets.target }}
 
       - name: Build Binary
-        env:
-          TARGET: ${{ matrix.targets.target }}
-        run: cargo build --target "$TARGET" --package nifi-migrate
+        run: cargo build --target ${{ matrix.targets.target }} --package nifi-migrate
