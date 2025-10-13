@@ -46,15 +46,15 @@ jobs:
           targets: ${{ matrix.targets.target }}
 
       - name: Build Binary
-        run: cargo build --target "${{ matrix.targets.target }}" --release --package nifi-migrate
+        run: cargo build --target ${{ matrix.targets.target }} --release --package nifi-migrate
 
       - name: Rename Binary (Unix)
         if: runner.os != 'Windows'
-        run: mv "target/${{ matrix.targets.target }}/release/nifi-migrate" "nifi-migrate-${{ matrix.targets.target }}"
+        run: mv target/${{ matrix.targets.target }}/release/nifi-migrate nifi-migrate-${{ matrix.targets.target }}
 
       - name: Rename Binary (Windows)
         if: runner.os == 'Windows'
-        run: mv "target/${{ matrix.targets.target }}/release/nifi-migrate.exe" "nifi-migrate-${{ matrix.targets.target }}.exe"
+        run: mv target/${{ matrix.targets.target }}/release/nifi-migrate.exe nifi-migrate-${{ matrix.targets.target }}.exe
 
       - name: Upload Artifact to Release
         uses: softprops/action-gh-release@72f2c25fcb47643c292f7107632f7a47c1df5cd8 # v2.3.2

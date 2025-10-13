@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 0.1.1 - 2025-10-13
+
+- Fix Windows build ([#6])
+
+[#6]: https://github.com/stackabletech/nifi-migrate/pull/6
+
 ## 0.1.0 - 2025-10-13
 
 ### Added
