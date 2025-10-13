@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: 2025 Stackable GmbH
+# SPDX-License-Identifier: Apache-2.0
+---
+name: pre-commit
+
+on:
+  pull_request:
+
+env:
+  RUST_TOOLCHAIN_VERSION: "1.87.0"
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: stackabletech/actions/run-pre-commit@9a70678a34ec4e4f6927d0f8842b74aa857a9577 # v0.10.2
+        with:
+          rust: ${{ env.RUST_TOOLCHAIN_VERSION }}
