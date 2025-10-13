@@ -5,6 +5,8 @@ SPDX-License-Identifier: Apache-2.0
 
 # Claude Code Instructions
 
+Always read the README.md file to understand what this project is about.
+
 When making changes to this project, always run the following checks in order:
 
 1. **Format code**: `cargo fmt`
@@ -34,21 +36,34 @@ To install pre-commit git hooks:
 - Files covered by `REUSE.toml` don't need individual headers
 - License: Apache-2.0
 - Copyright holder: Stackable GmbH
-- **All full sentences in comments (`//` and `///`) must end with a period**
+- All full sentences in comments (`//` and `///`) must end with a period
 
 ## Adding New Migration Rules
 
 When adding new migration rules, follow these steps in order:
 
-1. Create a new file in `src/rules/` (e.g., `my_rule.rs`)
+1. Create a new file in `src/migration/rules/` (e.g., `my_rule.rs`)
 2. Implement the `MigrationRule` trait with SPDX headers
-3. Add the module to `src/rules/mod.rs` and export it
-4. Register it in `Migrator::new()` in `src/lib.rs`
-5. Add comprehensive tests in the rule file
+   - Rules can apply to processors, controller services, or both
+   - The trait checks for `type` and `bundle` fields, not component type
+3. Add the module to `src/migration/rules.rs` and export it
+4. Register it in `Migrator::default()` in `src/migration.rs`
+   - Add to the `rules` vec with appropriate comment (processor/controller service)
+5. Add comprehensive unit tests in the rule file
+   - Test both the rule in isolation and in the full migration flow
 6. **Update README.md** in the "Supported Migrations" section:
    - Add a new subsection describing the migration
    - Include the old and new type/bundle values
-   - Explain why the migration is needed
+   - Explain why the migration is needed (link to JIRA ticket if available)
 7. Run all checks listed above (fmt, clippy, test, reuse lint)
 
 All steps must be completed before considering the migration rule complete.
+
+## Project Structure
+
+- `src/main.rs` - CLI entry point, displays version detection and migration results
+- `src/cli.rs` - Command-line argument parsing with clap
+- `src/migration.rs` - Core migration engine with `Migrator` struct
+- `src/migration/rules.rs` - Module declarations for all migration rules
+- `src/migration/rules/*.rs` - Individual migration rule implementations
+- There might be other files but these are the core ones
