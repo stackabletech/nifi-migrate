@@ -23,6 +23,16 @@ A Rust CLI tool for migrating Apache NiFi flow.json files between versions.
 - **Reason**: In NiFi 2.x, Jolt processors were moved to a separate bundle and properties were renamed
 - **Reference**: [NIFI-12554](https://issues.apache.org/jira/browse/NIFI-12554)
 
+### Distributed Cache Controller Services
+
+All Distributed Cache services have been renamed to remove the "Distributed" prefix for clarity in NiFi 2.x.
+
+- **DistributedMapCacheClientService** → **MapCacheClientService**
+- **DistributedSetCacheClientService** → **SetCacheClientService**
+- **DistributedMapCacheServer** → **MapCacheServer**
+- **DistributedSetCacheServer** → **SetCacheServer**
+- **Reference**: [NIFI-13596](https://issues.apache.org/jira/browse/NIFI-13596)
+
 ## Build
 
 ```bash
