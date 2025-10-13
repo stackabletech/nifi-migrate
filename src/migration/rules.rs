@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 2025 Stackable GmbH
 // SPDX-License-Identifier: Apache-2.0
 
-mod jolt_transform;
+mod jolt_transform_json;
 mod jolt_transform_record;
 
-pub use jolt_transform::JoltTransformMigration;
+pub use jolt_transform_json::JoltTransformJsonMigration;
 pub use jolt_transform_record::JoltTransformRecordMigration;
 
 use serde_json::Value;
