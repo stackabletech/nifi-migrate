@@ -4,7 +4,10 @@
 mod rules;
 
 use anyhow::{Context, Result};
-use rules::{JoltTransformJsonMigration, JoltTransformRecordMigration, MigrationRule};
+use rules::{
+    DistributedCacheServicesMigration, JoltTransformJsonMigration, JoltTransformRecordMigration,
+    MigrationRule,
+};
 use serde_json::Value;
 use std::fs;
 use std::path::Path;
@@ -26,8 +29,11 @@ impl Default for Migrator {
     fn default() -> Self {
         Self {
             rules: vec![
+                // Processor migrations
                 Box::new(JoltTransformJsonMigration),
                 Box::new(JoltTransformRecordMigration),
+                // Controller service migrations
+                Box::new(DistributedCacheServicesMigration),
             ],
         }
     }
@@ -110,27 +116,22 @@ impl Migrator {
     fn process_value_with_context(
         &self,
         value: &mut Value,
-        parent_key: Option<&str>,
+        _parent_key: Option<&str>,
         changes: &mut Vec<MigrationChange>,
     ) {
         match value {
             Value::Object(map) => {
-                // Check if this object is a processor (but not a controller service)
-                // Controller services have the same structure as processors (type + bundle)
-                // but appear under "controllerServices" key instead of "processors" key
-                // This entire matching thing (as well as the migration rules) can be made smarter
-                // as needed. For now, we only have two rules and both are for processors so it's
-                // fine as is.
-                let is_processor = map.contains_key("type")
-                    && map.contains_key("bundle")
-                    && parent_key != Some("controllerServices");
+                // Check if this object is a processor or controller service.
+                // Both have the same structure (type + bundle fields).
+                let has_type_and_bundle = map.contains_key("type") && map.contains_key("bundle");
 
-                if is_processor {
-                    self.process_processor(value, changes);
+                if has_type_and_bundle {
+                    // Apply migration rules (works for both processors and controller services)
+                    self.process_component(value, changes);
                 }
 
-                // Recursively process all nested values
-                // Need to re-borrow to avoid double mutable borrow
+                // Recursively process all nested values.
+                // Need to re-borrow to avoid double mutable borrow.
                 if let Value::Object(map) = value {
                     for (key, val) in map.iter_mut() {
                         self.process_value_with_context(val, Some(key), changes);
@@ -139,33 +140,33 @@ impl Migrator {
             }
             Value::Array(arr) => {
                 for item in arr.iter_mut() {
-                    self.process_value_with_context(item, parent_key, changes);
+                    self.process_value_with_context(item, _parent_key, changes);
                 }
             }
             _ => {}
         }
     }
 
-    /// Process a single processor object.
-    fn process_processor(&self, processor: &mut Value, changes: &mut Vec<MigrationChange>) {
+    /// Process a single component (processor or controller service).
+    fn process_component(&self, component: &mut Value, changes: &mut Vec<MigrationChange>) {
         for rule in &self.rules {
-            if rule.applies(processor) && rule.apply(processor) {
-                let processor_id = processor
+            if rule.applies(component) && rule.apply(component) {
+                let component_id = component
                     .get("identifier")
-                    .or_else(|| processor.get("id"))
+                    .or_else(|| component.get("id"))
                     .and_then(|v| v.as_str())
                     .unwrap_or("unknown")
                     .to_owned();
 
-                let processor_name = processor
+                let component_name = component
                     .get("name")
                     .and_then(|v| v.as_str())
                     .unwrap_or("unnamed")
                     .to_owned();
 
                 changes.push(MigrationChange {
-                    processor_id,
-                    processor_name,
+                    processor_id: component_id,
+                    processor_name: component_name,
                     rule_description: rule.description(),
                 });
             }
@@ -286,5 +287,92 @@ mod tests {
         );
         // Verify jolt processor changed
         assert_eq!(flow["processors"][1]["bundle"]["artifact"], "nifi-jolt-nar");
+    }
+
+    #[test]
+    fn test_controller_service_migration() {
+        let mut flow = json!({
+            "flowContents": {
+                "controllerServices": [
+                    {
+                        "identifier": "service-1",
+                        "name": "MapCacheClient",
+                        "type": "org.apache.nifi.distributed.cache.client.DistributedMapCacheClientService",
+                        "bundle": {
+                            "artifact": "nifi-distributed-cache-services-nar"
+                        }
+                    }
+                ]
+            }
+        });
+
+        let migrator = Migrator::default();
+        let changes = migrator.migrate_flow(&mut flow);
+
+        assert_eq!(changes.len(), 1);
+        assert_eq!(changes[0].processor_id, "service-1");
+        assert_eq!(changes[0].processor_name, "MapCacheClient");
+
+        // Verify the controller service was migrated
+        assert_eq!(
+            flow["flowContents"]["controllerServices"][0]["type"],
+            "org.apache.nifi.distributed.cache.client.MapCacheClientService"
+        );
+    }
+
+    #[test]
+    fn test_mixed_processors_and_controller_services() {
+        let mut flow = json!({
+            "processors": [
+                {
+                    "identifier": "proc-1",
+                    "name": "JoltProc",
+                    "type": "org.apache.nifi.processors.standard.JoltTransformJSON",
+                    "bundle": {
+                        "artifact": "nifi-standard-nar"
+                    }
+                }
+            ],
+            "controllerServices": [
+                {
+                    "identifier": "service-1",
+                    "name": "MapCache",
+                    "type": "org.apache.nifi.distributed.cache.client.DistributedMapCacheClientService",
+                    "bundle": {
+                        "artifact": "nifi-distributed-cache-services-nar"
+                    }
+                },
+                {
+                    "identifier": "service-2",
+                    "name": "SetCache",
+                    "type": "org.apache.nifi.distributed.cache.client.DistributedSetCacheClientService",
+                    "bundle": {
+                        "artifact": "nifi-distributed-cache-services-nar"
+                    }
+                }
+            ]
+        });
+
+        let migrator = Migrator::default();
+        let changes = migrator.migrate_flow(&mut flow);
+
+        // Should migrate 1 processor + 2 controller services = 3 total
+        assert_eq!(changes.len(), 3);
+
+        // Verify processor migration
+        assert_eq!(
+            flow["processors"][0]["type"],
+            "org.apache.nifi.processors.jolt.JoltTransformJSON"
+        );
+
+        // Verify controller service migrations
+        assert_eq!(
+            flow["controllerServices"][0]["type"],
+            "org.apache.nifi.distributed.cache.client.MapCacheClientService"
+        );
+        assert_eq!(
+            flow["controllerServices"][1]["type"],
+            "org.apache.nifi.distributed.cache.client.SetCacheClientService"
+        );
     }
 }
