@@ -9,14 +9,18 @@ on:
 env:
   RUST_TOOLCHAIN_VERSION: "1.87.0"
 
+permissions: {}
+
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           fetch-depth: 0
-      - uses: stackabletech/actions/run-pre-commit@9a70678a34ec4e4f6927d0f8842b74aa857a9577 # v0.10.2
+      - uses: stackabletech/actions/run-pre-commit@0fe048f952bee522474903a925ea48dc706a0bb4 # v0.17.5
         with:
           rust: ${{ env.RUST_TOOLCHAIN_VERSION }}
