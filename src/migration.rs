@@ -58,20 +58,18 @@ impl Migrator {
             .canonicalize()
             .with_context(|| format!("Failed to resolve input path: {}", input_path.display()))?;
 
-        if let Ok(canonical_output) = output_path.canonicalize() {
-            if canonical_input == canonical_output {
+        if let Ok(canonical_output) = output_path.canonicalize()
+            && canonical_input == canonical_output {
                 anyhow::bail!(
                     "Input and output paths are the same. This would overwrite the original file."
                 );
             }
-        }
 
         // Validate output directory exists
-        if let Some(parent) = output_path.parent() {
-            if !parent.as_os_str().is_empty() && !parent.exists() {
+        if let Some(parent) = output_path.parent()
+            && !parent.as_os_str().is_empty() && !parent.exists() {
                 anyhow::bail!("Output directory does not exist: {}", parent.display());
             }
-        }
 
         let file = fs::File::open(input_path)
             .with_context(|| format!("Failed to open input file: {}", input_path.display()))?;

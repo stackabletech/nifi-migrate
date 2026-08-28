@@ -53,8 +53,8 @@ impl MigrationRule for DistributedCacheServicesMigration {
     fn apply(&self, component: &mut Value) -> bool {
         let mut changed = false;
 
-        if let Some(type_field) = component.get_mut("type") {
-            if let Some(current_type) = type_field.as_str() {
+        if let Some(type_field) = component.get_mut("type")
+            && let Some(current_type) = type_field.as_str() {
                 for (old_type, new_type) in CACHE_SERVICE_MIGRATIONS {
                     if current_type == old_type {
                         *type_field = Value::String(new_type.to_string());
@@ -63,7 +63,6 @@ impl MigrationRule for DistributedCacheServicesMigration {
                     }
                 }
             }
-        }
 
         changed
     }
