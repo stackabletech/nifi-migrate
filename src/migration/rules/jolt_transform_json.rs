@@ -41,23 +41,21 @@ impl MigrationRule for JoltTransformJsonMigration {
         let mut changed = false;
 
         // Update the type field
-        if let Some(type_field) = processor.get_mut("type") {
-            if type_field.as_str() == Some("org.apache.nifi.processors.standard.JoltTransformJSON")
-            {
-                *type_field =
-                    Value::String("org.apache.nifi.processors.jolt.JoltTransformJSON".to_owned());
-                changed = true;
-            }
+        if let Some(type_field) = processor.get_mut("type")
+            && type_field.as_str() == Some("org.apache.nifi.processors.standard.JoltTransformJSON")
+        {
+            *type_field =
+                Value::String("org.apache.nifi.processors.jolt.JoltTransformJSON".to_owned());
+            changed = true;
         }
 
         // Update the bundle artifact field
-        if let Some(bundle) = processor.get_mut("bundle") {
-            if let Some(artifact) = bundle.get_mut("artifact") {
-                if artifact.as_str() == Some("nifi-standard-nar") {
-                    *artifact = Value::String("nifi-jolt-nar".to_owned());
-                    changed = true;
-                }
-            }
+        if let Some(bundle) = processor.get_mut("bundle")
+            && let Some(artifact) = bundle.get_mut("artifact")
+            && artifact.as_str() == Some("nifi-standard-nar")
+        {
+            *artifact = Value::String("nifi-jolt-nar".to_owned());
+            changed = true;
         }
 
         // Migrate properties: rename old property keys to new ones
